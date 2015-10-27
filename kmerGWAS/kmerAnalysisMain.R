@@ -230,7 +230,7 @@ checkInputRelatedToDB = function(createDB = NULL,
 ## @kmerFileDir: The output directory of the kmer files created
 ## @prefix: The prefix of the output file containing the kmer file paths and phenotype
 ##########################################################################################
-createKmerFiles = function(bam_files = NULL, 
+createKmerFilesFromBAM = function(bam_files = NULL, 
                            comid = NULL, 
                            phenotype = NULL,
                            nproc = NULL,
@@ -265,7 +265,6 @@ createKmerFiles = function(bam_files = NULL,
   }
   
   kmerFilePaths = paste(kmerFileDir, comid, ".kmer31.txt.gz", sep="")
-  message(kmerFilePaths[1])
   
   kmerPheno.df = data.frame(filePath=kmerFilePaths, phenotype = phenotype)
   kmerPhenoPath = paste(c(formatDir(getwd()), prefix,"KmerPheno.txt"), collapse="")
@@ -275,6 +274,27 @@ createKmerFiles = function(bam_files = NULL,
   
   
   
+}
+
+##########################################################################################
+## Create kmer files from bam files.
+## @dataFilePath: A list of bam files of the genomes (one bam file per genome)
+## @kmerFileDir: The output directory of the kmer files created
+## @extSoft: The file that specifies the path of the used external software
+##########################################################################################
+createKmerFilesFromFASTA = function(createKmersFromFastaR = NULL, dataFilePath = NULL, kmerFileDir = NULL, extSoft = NULL){
+	
+	system(paste(c("Rscript", createKmersFromFastaR, "-dataFile", dataFilePath, "-externalSoftware", extSoft, "-kmerFileDir", kmerFileDir), collapse=" "))
+	datTab.df = read.table(file = dataFilePath, header = T, as.is = T)
+	kmerFilePaths = paste(kmerFileDir, datTab.df$id, ".kmer31.txt.gz", sep="")
+	
+	kmerPheno.df = data.frame(filePath=kmerFilePaths, phenotype = datTab.df$phenotype)
+  	kmerPhenoPath = paste(c(formatDir(getwd()), prefix,"KmerPheno.txt"), collapse="")
+  	write.table(kmerPheno.df, file = kmerPhenoPath, row.names=F, col.names=T, sep="\t", quote=F)
+  
+  	return(kmerPhenoPath)
+
+	
 }
 
 
@@ -527,11 +547,11 @@ message(ncol(inputs))
 
 ##### Input arguments required in general #####
 dataFilePath = extractInputArgument(argName = "dataFile", commandLineInputs = inputs)
-message("flag1")
 srcDir = formatDir(extractInputArgument(argName = "srcDir", commandLineInputs = inputs, default = getwd()))
 prefix = extractInputArgument(argName = "prefix", commandLineInputs = inputs)
 runLMM = as.logical(extractInputArgument(argName = "runLMM", commandLineInputs = inputs, default = TRUE))
-toCreateKmerFiles = extractInputArgument(argName = "createKmerFiles", commandLineInputs = inputs, default = TRUE)
+geneticFileFormat = extractInputArgument(argName = "genFileFormat", commandLineInputs = inputs)
+#toCreateKmerFiles = extractInputArgument(argName = "createKmerFiles", commandLineInputs = inputs, default = TRUE)
 externalSoftwarePaths = extractInputArgument(argName="externalSoftware", commandLineInputs = inputs)
 createDB = extractInputArgument(argName = "createDB", commandLineInputs = inputs, default = TRUE)
 signif = extractInputArgument(argName = "signif", commandLineInputs = inputs, default = 10000)
@@ -570,6 +590,7 @@ parallelPath = getSoftwarePath("parallel", externalSoftwarePaths.df)
 cat(paste0("Script directory: ",srcDir))
 ## Get the paths of the R scripts
 doAndSortDskR = paste(srcDir, "doAndSortDsk.R", sep="")
+createKmersFromFastaR = paste(srcDir, "createKmersFromFasta.R", sep="")
 kmerAnalysisR = paste(srcDir, "kmerAnalysis.R", sep="")
 parseNcbiGeneR = paste(srcDir, "parse_ncbi_gene.R", sep="")
 kmerAnnotationR = paste(srcDir, "kmerAnnotation.R", sep="")
@@ -587,6 +608,13 @@ checkInputRelatedToDB(createDB = createDB,
 
 data.df = read.table(file=dataFilePath, header=T, as.is=T)
 phenotype = data.df$phenotype
+toCreateKmerFiles = TRUE
+geneticFileFormat = toupper(geneticFileFormat)
+if(geneticFileFormat == "KMER"){
+	toCreateKmerFiles = FALSE
+}else if(!any(geneticFileFormat == c("BAM", "FASTA"))){
+	stop("The genetic file format must be BAM, FASTA or Kmer.")
+}
 
 
 ## Check if kmer files need to created
@@ -597,10 +625,16 @@ if(toCreateKmerFiles){
   comid = data.df$id
   
   ## Check that all the bam files exists
-  checkExistence(bam_files)
-  kmerPhenoPath = createKmerFiles(bam_files = bam_files, comid = comid, phenotype = phenotype,
-                                  nproc = nproc, kmerFileDir = kmerFileDir, prefix = prefix, 
-                                  externalSoftwarePaths = externalSoftwarePaths)
+  if(geneticFileFormat == "BAM"){
+  	checkExistence(bam_files)
+  	kmerPhenoPath = createKmerFilesFromBAM(bam_files = bam_files, comid = comid, phenotype = phenotype,
+    	 	                             nproc = nproc, kmerFileDir = kmerFileDir, prefix = prefix, 
+        		                          externalSoftwarePaths = externalSoftwarePaths)
+  }else{
+  	kmerPhenoPath = createKmerFilesFromFASTA(createKmersFromFastaR = createKmersFromFastaR, dataFilePath = dataFilePath, 
+  							kmerFileDir =  kmerFileDir, extSoft = externalSoftwarePaths)
+  	
+  }
   
 }else{
   kmerPhenoPath = dataFilePath

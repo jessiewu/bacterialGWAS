@@ -282,6 +282,7 @@ if(length(args!=0)){
 
 if((length(args)%%2)!=0 | length(args)==0) {
   cat(help,sep="\n")
+  message(paste(args, collapse=" "))
   stop("\nIncorrect usage\n")
 }
 
