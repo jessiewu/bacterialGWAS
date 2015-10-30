@@ -25,7 +25,7 @@ createPhenoTable<-function(
 ## prefix: prefix of the output table path
 ## kmerPhenoPath: output path of the table containing kmer paths and phenotype data
 #######################################################################################
-gwasKmer<-function(prefix = NULL, kmerPhenoPath = NULL, gwasKmerPatternPath = NULL){
+gwasKmer<-function(prefix = NULL, kmerPhenoPath = NULL, gwasKmerPatternPath = NULL, minCov = NULL){
 	gwasKmerOutputPath<-paste(prefix,".gwaskmer-out", sep="")
   
   kmerPheno.df = read.table(file=kmerPhenoPath, header=T, as.is=T)
@@ -35,6 +35,7 @@ gwasKmer<-function(prefix = NULL, kmerPhenoPath = NULL, gwasKmerPatternPath = NU
 	  gwasKmerPatternPath,
 	  gwasKmerPatternInputFile, 
 		gwasKmerOutputPath,
+		minCov,
 		sep =" ",
 		collapse=""
 	)
@@ -151,14 +152,16 @@ kmerAnalysis<-function(
 kmerPhenoAnalysis<-function(
 	kmerPhenoTabPath = NULL,
 	prefix = NULL,
-  gwasKmerPatternPath = NULL){
+	gwasKmerPatternPath = NULL,
+	minCov = NULL){
 
 
 	## Performs the kmer analysis
 	gwasKmerOutputPath<-gwasKmer(
 		prefix = prefix, 
 		kmerPhenoPath = kmerPhenoTabPath,
-    gwasKmerPatternPath = gwasKmerPatternPath
+		gwasKmerPatternPath = gwasKmerPatternPath,
+		minCov = minCov
 	)
 
 	## Process results and draw plots
@@ -267,8 +270,8 @@ checkExistence = function(filePath = NULL){
 ## Help message
 ##################################################################################
 help = paste(
-  "do_dsk.R Count kmers for a list of bam files, first removing duplicates and trimming adaptors",
-  "Usage: Rscript kmerAnalysis.R -dataFile kmer_pheno.txt -prefix prefix -externalSofware softwarePath.txt",
+  "kmerAnalysis.R Performs association tests between kmers and the phenotype.",
+  "Usage: Rscript kmerAnalysis.R -dataFile kmer_pheno.txt -prefix prefix -minCov 5 -externalSofware softwarePath.txt",
   sep="\n")
 
 # Read options from command line
@@ -293,13 +296,14 @@ inputs = getCommandLineInputMatrix(args = args)
 dataFilePath = extractInputArgument(argName = "dataFile", commandLineInputs = inputs)
 prefix = extractInputArgument(argName = "prefix", commandLineInputs = inputs)
 removeKmerTxt = extractInputArgument(argName = "removeKmerTxt", commandLineInputs = inputs, default = FALSE)
+minCov = extractInputArgument(argName = "minCov", commandLineInputs = inputs)
 externalSoftwarePaths = extractInputArgument(argName="externalSoftware", commandLineInputs = inputs)
 
 ## Get the path of external software used
 externalSoftwarePaths.df = read.table(file=externalSoftwarePaths, header=T, as.is = T)
 gwasKmerPatternPath = getSoftwarePath("gwasKmerPattern", externalSoftwarePaths.df)
 
-kmerPhenoAnalysis(kmerPhenoTabPath = dataFilePath, prefix = prefix, gwasKmerPatternPath = gwasKmerPatternPath)
+kmerPhenoAnalysis(kmerPhenoTabPath = dataFilePath, prefix = prefix, gwasKmerPatternPath = gwasKmerPatternPath, minCov = minCov)
 
 message(removeKmerTxt)
 if(removeKmerTxt){

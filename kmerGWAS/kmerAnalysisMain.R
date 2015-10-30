@@ -26,8 +26,8 @@ help = paste(
   "",
   "KmerAnalysisMain.R performs a kmer GWAS",
   "Authors: Earle, S., Wilson, D. J. and Wu, C.-H.",
-  "Usage: Rscript KmerAnalysisMain.R -dataFile -srcDir -prefix -externalSoftware -refSeqFasta1 -ncbiSummary -db2 -relateMatrix",
-  "       E.g. Rscript KmerAnalysisMain.R -dataFile ecol_id_bam_pheno.txt -srcDir /home/scripts/R/kmer/ -prefix ecol -externalSoftware extSoftware.txt -refSeqFasta1 ecolRefSeq1.txt -ncbiSummary ecolNcbiSummary.txt -db2 /home/ecol/db/ecolDB2 -relateMatrix /home/eco/lmm/output/",
+  "Usage: Rscript kmerAnalysisMain.R -dataFile -srcDir -prefix -genFileFormat -externalSoftware -refSeqFasta1 -ncbiSummary -db2 -relateMatrix",
+  "       E.g. Rscript kmerAnalysisMain.R -dataFile ecol_id_bam_pheno.txt -srcDir /home/scripts/R/kmer/ -prefix ecol -externalSoftware extSoftware.txt -refSeqFasta1 ecolRefSeq1.txt -ncbiSummary ecolNcbiSummary.txt -db2 /home/ecol/db/ecolDB2 -relateMatrix /home/eco/lmm/output/",
   "","Options:",
   "-dataFile",
   " The path of a file containing list of file paths to bam files or kmer files, corresponding ids and phenotypes.",
@@ -35,6 +35,8 @@ help = paste(
   " Otherwise the paths to the kmer files needs to be provided.",
   "-srcDir",
   " Path of the directory that contains all the R scripts.",  
+  "-genFileFormat",
+  "The file format of the genomic data.",
   "-prefix",
   " The prefix of the output files.",  
   "-runLMM",
@@ -309,9 +311,11 @@ runKmerAnalysis = function(kmerAnalysisR = NULL,
                            kmerPhenoPath = NULL, 
                            prefix = NULL, 
                            removeKmerTxt = NULL,
-                           externalSoftwarePaths = NULL){
+                           externalSoftwarePaths = NULL,
+                           minCov = NULL){
+  message("minCov: ", minCov)
   system(paste(c("Rscript", kmerAnalysisR, "-dataFile", kmerPhenoPath, "-prefix", prefix, 
-                 "-removeKmerTxt", removeKmerTxt, "-externalSoftware", externalSoftwarePaths), collapse=" "))
+                 "-removeKmerTxt", removeKmerTxt, "-minCov", minCov, "-externalSoftware", externalSoftwarePaths), collapse=" "))
   
   # This is not ideal as this requires knowing the suffix
   # and how the names are generated before hand. It would
@@ -551,6 +555,7 @@ srcDir = formatDir(extractInputArgument(argName = "srcDir", commandLineInputs = 
 prefix = extractInputArgument(argName = "prefix", commandLineInputs = inputs)
 runLMM = as.logical(extractInputArgument(argName = "runLMM", commandLineInputs = inputs, default = TRUE))
 geneticFileFormat = extractInputArgument(argName = "genFileFormat", commandLineInputs = inputs)
+minCov = extractInputArgument(argName = "minCov", commandLineInputs = inputs, default = 5)
 #toCreateKmerFiles = extractInputArgument(argName = "createKmerFiles", commandLineInputs = inputs, default = TRUE)
 externalSoftwarePaths = extractInputArgument(argName="externalSoftware", commandLineInputs = inputs)
 createDB = extractInputArgument(argName = "createDB", commandLineInputs = inputs, default = TRUE)
@@ -642,9 +647,8 @@ if(toCreateKmerFiles){
 }
 
 
-
 ##### Run kmer analysis #####
-kmerAnalysisOutput = runKmerAnalysis(kmerAnalysisR = kmerAnalysisR, kmerPhenoPath = kmerPhenoPath, 
+kmerAnalysisOutput = runKmerAnalysis(kmerAnalysisR = kmerAnalysisR, kmerPhenoPath = kmerPhenoPath, minCov = minCov,
                                          prefix = prefix, removeKmerTxt = FALSE, externalSoftwarePaths = externalSoftwarePaths)
 
 ##### Create BLAST databases #####
