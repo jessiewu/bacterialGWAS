@@ -27,7 +27,7 @@ help = paste(
   "KmerAnalysisMain.R performs a kmer GWAS",
   "Authors: Earle, S., Wilson, D. J. and Wu, C.-H.",
   "Usage: Rscript kmerAnalysisMain.R -dataFile -srcDir -prefix -genFileFormat -externalSoftware -refSeqFasta1 -ncbiSummary -db2 -relateMatrix",
-  "       E.g. Rscript kmerAnalysisMain.R -dataFile ecol_id_bam_pheno.txt -srcDir /home/scripts/R/kmer/ -prefix ecol -externalSoftware extSoftware.txt -refSeqFasta1 ecolRefSeq1.txt -ncbiSummary ecolNcbiSummary.txt -db2 /home/ecol/db/ecolDB2 -relateMatrix /home/eco/lmm/output/",
+  "       E.g. Rscript kmerAnalysisMain.R -dataFile ecol_id_bam_pheno.txt -srcDir /home/scripts/R/kmer/ -prefix ecol -externalSoftware extSoftware.txt -genFileFormat BAM -refSeqFasta1 ecolRefSeq1.txt -ncbiSummary ecolNcbiSummary.txt -db2 /home/ecol/db/ecolDB2 -relateMatrix /home/eco/lmm/output/",
   "","Options:",
   "-dataFile",
   " The path of a file containing list of file paths to bam files or kmer files, corresponding ids and phenotypes.",
