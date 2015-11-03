@@ -3,7 +3,7 @@
 #
 # Copyright (C) 2015 University of Oxford
 #
-# This file is part of GWAS pipeline.
+# This file is part of the bacterial GWAS pipeline.
 # See the NOTICE file distributed with this work for additional
 # information regarding copyright ownership and licensing.
 #
