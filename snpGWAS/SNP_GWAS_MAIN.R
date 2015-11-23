@@ -259,11 +259,12 @@ getPhylogenyForCFML = function(
     }
     
   } else if(is.null(phylogeny) & length(fastafiles)>=100){
+  	message("Running RAxML")
     
     phylogeny = buildTreeByRAxML(raxmlBuildR = raxmlBuildR, raxmlPath = raxmlPath, ref_fa = ref_fa, dataFile = dataFile, prefix = prefix)
     
   } else if(is.null(phylogeny) & length(fastafiles)<100){
-    
+    message("Running PhyML")
     phylogeny = buildTreeByPhyML(phymlBuildR = phymlBuildR, phymlPath = phymlPath, ref_fa = ref_fa, dataFile = dataFile, prefix = prefix)
     
   }
@@ -359,7 +360,7 @@ runGetAnnotation = function(
 ##################################################################################
 ## Generate input files for imputation from CFML.
 ##################################################################################
-generateCfmlInputs = function(convertPhylipToFastaPath = NULL,
+generateCfmlInputs = function(createFastaPath = NULL,
                               prefix = NULL,
                               runCfmlR = NULL,
                               clonalFrameMLPath = NULL,
@@ -368,11 +369,11 @@ generateCfmlInputs = function(convertPhylipToFastaPath = NULL,
                               dataFile = NULL,
                               getMissingSiteCountR = NULL){
   
-  phylipFilePath =  paste(prefix,"_phylip.phylip", sep="")
-  cfmlFastaFilePath = runConvertPhylipToFasta(
-    phylipFilePath = phylipFilePath, 
-    convertPhylipToFastaPath = convertPhylipToFastaPath, 
-    prefix = prefix
+  
+  cfmlFastaFilePath = runCreateFasta(
+      createFastaPath = createFastaPath, 
+      prefix = prefix,
+      dataFile = dataFile
   )
   message("phylip to fasta version completed!")
   message(paste(c("phylogeny:", phylogeny), collapse=" "))
@@ -405,7 +406,7 @@ getCfmlInputs = function(cfml_prefix = NULL,
                          phymlPath = NULL, 
                          ref_fa = NULL, 
                          dataFile = NULL,
-                         convertPhylipToFastaPath = NULL,
+                         createFastaPath = NULL,
                          runCfmlR = NULL,
                          clonalFrameMLPath = NULL,
                          phylogeny = NULL,
@@ -417,8 +418,9 @@ getCfmlInputs = function(cfml_prefix = NULL,
                         phymlBuildR = phymlBuildR, phymlPath = phymlPath, ref_fa = ref_fa, dataFile = dataFile, prefix = prefix)
     
     message("phyML completed!")
+    message("createFastaPath: ", createFastaPath)
     
-    cfmlInputPaths = generateCfmlInputs(convertPhylipToFastaPath = convertPhylipToFastaPath, prefix = prefix, runCfmlR = runCfmlR,
+    cfmlInputPaths = generateCfmlInputs(createFastaPath = createFastaPath, prefix = prefix, runCfmlR = runCfmlR,
                                         clonalFrameMLPath = clonalFrameMLPath, phylogeny = phylogeny, cfmlFastaFilePath = cfmlFastaFilePath,
                                         dataFile = dataFile, getMissingSiteCountR = getMissingSiteCountR)
     
@@ -434,17 +436,15 @@ getCfmlInputs = function(cfml_prefix = NULL,
 ##################################################################################
 ## Run ConvertPhylipToFasta.
 ##################################################################################
-runConvertPhylipToFasta = function(phylipFilePath = NULL, 
-	convertPhylipToFastaPath = NULL, 
-	prefix = NULL){
+runCreateFasta = function(createFastaPath = NULL, prefix = NULL, dataFile = NULL){
 		
-	cfmlFastaFilePath =  paste(prefix,".fa", sep="")
-	pathSplit = unlist(strsplit(convertPhylipToFastaPath, split="/"))
-	classPath = gsub(pathSplit[length(pathSplit)], "", convertPhylipToFastaPath)
-	convertPhylipToFasta = gsub(".class", "", pathSplit[length(pathSplit)])
-	convertPhylipToFastaCommand = paste(c("java", "-cp", classPath, convertPhylipToFasta, phylipFilePath, cfmlFastaFilePath), collapse=" ")
+	cfmlFastaFilePath =  paste(prefix,".fasta", sep="")
+	pathSplit = unlist(strsplit(createFastaPath, split="/"))
+	classPath = gsub(pathSplit[length(pathSplit)], "", createFastaPath)
+	createFasta = gsub(".class", "", pathSplit[length(pathSplit)])
+	createFastaCommand = paste(c("java", "-cp", classPath, createFasta, prefix, dataFile), collapse=" ")
 	
-	system(convertPhylipToFastaCommand)
+	system(createFastaCommand)
 	checkExistence(cfmlFastaFilePath, "The fasta file has not been correctly created by ConvertPhylipToFasta!")
 	return(cfmlFastaFilePath)
 	
@@ -748,7 +748,7 @@ clonalFrameMLPath = getSoftwarePath("ClonalFrameML", externalSoftwarePaths.df)
 gemmaPath = getSoftwarePath("GEMMA", externalSoftwarePaths.df)
 raxmlPath = getSoftwarePath("RAxML", externalSoftwarePaths.df)
 phymlPath = getSoftwarePath("PhyML", externalSoftwarePaths.df)
-convertPhylipToFastaPath = getSoftwarePath("ConvertPhylipToFasta", externalSoftwarePaths.df)
+createFastaPath = getSoftwarePath("CreateFasta", externalSoftwarePaths.df)
 eigenSoftPath = getSoftwarePath("EigenSoft", externalSoftwarePaths.df)
 
 ##### Save input and later run information #####
@@ -775,7 +775,7 @@ snppatterns=snpCallingOutputPaths$snppatterns
 cfmlInputNames = getCfmlInputs(cfml_prefix = cfml_prefix, prefix = prefix, fastafiles = fastafiles, 
               raxmlBuildR = raxmlBuildR, raxmlPath = raxmlPath,
               phymlBuildR = phymlBuildR, phymlPath = phymlPath, ref_fa = ref_fa, dataFile = dataFile, 
-              convertPhylipToFastaPath = convertPhylipToFastaPath, runCfmlR = runCfmlR, clonalFrameMLPath = clonalFrameMLPath, 
+              createFastaPath = createFastaPath, runCfmlR = runCfmlR, clonalFrameMLPath = clonalFrameMLPath, 
               phylogeny = phylogeny, cfmlFastaFilePath = cfmlFastaFilePath, getMissingSiteCountR = getMissingSiteCountR)
 cfmlPositionCrossRef = cfmlInputNames$cfmlPositionCrossRef
 cfmlMLSeqFasta = cfmlInputNames$cfmlMLSeqFasta

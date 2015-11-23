@@ -83,9 +83,8 @@ data = read.table(snppatterns,h=T,sep="\t")
 #pheno=as.numeric(scan(pheno,what=character(0),sep="\n"))
 
 
-cfml_cref=scan(cfml_pos_cross_ref_path,what=character(0))
-cfml=unlist(strsplit(cfml_cref,","))
-cfml=as.matrix(cfml)
+cfml_cref=scan(cfml_pos_cross_ref_path,what=integer(0),sep=",")
+#cfml=unlist(strsplit(cfml_cref,","))
 
 cfml_imp=read_txt(cfml_seq_fasta_path)
 cfml_imp=cfml_imp[1:length(filepaths),]
@@ -115,7 +114,7 @@ for(i in 1:nrow(data)) {
 	#Read in the allelic variants
 	snpinfo2=unlist(snpinfo[i,2:5])
 	
-	pos_ref=as.numeric(cfml[position,])
+	pos_ref=cfml[position]
 	data_i = data[i,]
 	cfml_i = cfml_imp[,pos_ref] #Get the pattern from CFML output
 	
