@@ -30,7 +30,7 @@ gwasKmer<-function(prefix = NULL, kmerPhenoPath = NULL, gwasKmerPatternPath = NU
   
   kmerPheno.df = read.table(file=kmerPhenoPath, header=T, as.is=T)
 	gwasKmerPatternInputFile = paste(prefix,".gwasKmerPatternInput.txt", sep="")
-  write.table(kmerPheno.df, file=gwasKmerPatternInputFile, row.names=F, col.names=F, sep="\t", quote=F)
+  write.table(kmerPheno.df[,c('filePath','phenotype')], file=gwasKmerPatternInputFile, row.names=F, col.names=F, sep="\t", quote=F)
 	gwasCommand<-paste(
 	  gwasKmerPatternPath,
 	  gwasKmerPatternInputFile, 
