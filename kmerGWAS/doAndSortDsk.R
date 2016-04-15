@@ -162,7 +162,7 @@ doFullDodsk<-function(filePathPrefix = NULL){
 
 	if(length(remaining_comid) != 0){
     
-		cat(remaining_comid,file=paste0(prefix,"_dodsk_remaining.txt"),sep="\n")
+		cat(remaining_comid,file=paste0(filePathPrefix,"_dodsk_remaining.txt"),sep="\n")
 		stop("\nThe following comids did not complete kmer counting:\n",
 		paste(remaining_comid,collapse="\n"),"\nWritten incomplete comids to file")		
 
