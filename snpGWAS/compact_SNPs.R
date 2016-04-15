@@ -22,12 +22,15 @@ help=paste("compact_SNPs.R",
 	"outputPrefix: output prefix for output files",
 	sep="\n")
 
-comid=args[1]
+dataFile=args[1]
 cfmlFasta=args[2]
 outputPrefix=args[3]
 
-files=c(cfmlFasta,comid)
-filenames=c("CFML fasta","comid")
+data.df = read.table(file=dataFile, header=T, as.is=T)
+
+
+files=c(cfmlFasta, dataFile)
+filenames=c(dataFile,cfmlFasta)
 for(i in 1:length(files)){
 	if(file.exists(files[i])==FALSE){
 		stop(paste0("\nIncorrect usage: ",filenames[i]," file doesn't exist\n"))
@@ -45,7 +48,7 @@ read_reference = function(ref_file) {
 
 
 # List of comids
-comid = scan(comid, what=character(0))
+comid = data.df$id
 
 # Output file
 all.comid = substr(scan(pipe(paste0("sed -n 1~2p ",cfmlFasta)),what=character(0)),2,100)
