@@ -295,7 +295,7 @@ createGEMMAInputFile<-function(
 	SNPposition=bipinfo[,1]
 	
 	
-	data = read.table(bip.pattern.path,h=T,sep="\t")
+	data = read.table(bip.pattern.path, header=T, as.is=T)
 
 	cfml=scan(cfml.pos.cross.ref.path, what=integer(0),sep=",")
 	cfml_imp=read_txt(cfml.ml.seq.fa.path)
