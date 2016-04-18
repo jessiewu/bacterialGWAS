@@ -94,7 +94,7 @@ width = 5
 if(length(args) == 3){
 	width = as.numeric(args[3])
 }
-message("bin width: ", args[3])
+message("bin width: ", width)
 for(i in 1:fileCount){
 	cutoffs[i] = getCutoff(filePath = input.df$filePath[i], prefix = input.df$id[i], width = width)
 	cutoffs[i] = max(cutoffs[i], 5)
