@@ -25,7 +25,7 @@ localMaxima <- function(x) {
 }
 
 
-getCutoff = function(filePath = NULL, prefix = NULL){
+getCutoff = function(filePath = NULL, prefix = NULL, width = 5){
 	#message(filePath)
 	counts = scan(filePath, what=integer(0),sep=",")
 
@@ -36,7 +36,7 @@ getCutoff = function(filePath = NULL, prefix = NULL){
 	counts = counts[-1]
 	tab = cbind(1:length(counts),counts)
 	x = unlist(apply(tab,1,function(z){rep(z[1],z[2])}))
-	nbins = ceiling(length(counts)/5)
+	nbins = ceiling(length(counts)/width)
 	den = density(x, n = nbins)
 
 	
@@ -81,7 +81,7 @@ getCutoff = function(filePath = NULL, prefix = NULL){
 
 
 args = commandArgs(trailingOnly = TRUE)
-if(!(length(args) == 2 | length(args) ==0)) {
+if(!(length(args) == 2 | length(args) == 3| length(args) ==0)) {
 	stop("\nIncorrect usage\n")
 }
 
@@ -89,8 +89,13 @@ input.df = read.table(file=args[1], header=T, as.is=T)
 prefix = args[2]
 fileCount = nrow(input.df)
 cutoffs = vector(length=fileCount)
+
+width = 5
+if(length(args) == 3){
+	width = args[3]
+}
 for(i in 1:fileCount){
-	cutoffs[i] = getCutoff(filePath = input.df$filePath[i], prefix = input.df$id[i])
+	cutoffs[i] = getCutoff(filePath = input.df$filePath[i], prefix = input.df$id[i], width = width)
 	cutoffs[i] = max(cutoffs[i], 5)
 	
 	if((i%%100) == 0){
