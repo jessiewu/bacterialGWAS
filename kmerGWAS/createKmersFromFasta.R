@@ -15,7 +15,7 @@ createKmersFromFasta = function(datTab = NULL, kmerFileDir = NULL, sortDskPath =
 		if(!dosortdsk_size){
 			stop(
 				"\nThe following file with id did not complete kmer sorting:\n",
-				paste(id[i], collapse="\n")
+				paste(datTab$id[i], collapse="\n")
 			)
 		} else {
 			# Clean up	
