@@ -191,13 +191,23 @@ index=index+1
 od=order(sg,decreasing=TRUE)
 # Which are the top x kmers
 odsignif=od[1:signif]
+
+
 # Of the kmers not in the top x most significant, match the same number out of those remaining
 rem=setdiff(od,odsignif)
 message("signif:")
 message(signif)
-extras=sample(rem,signif,replace=FALSE)
-# All kmers to run through LMM
-LMM_kmers=c(odsignif,extras)
+
+if(length(rem) > 0){
+	#Get extras
+	extras=sample(rem,signif,replace=FALSE)
+	
+	# All kmers to run through LMM
+	LMM_kmers=c(odsignif,extras)
+	
+}else{
+	LMM_kmers=odsignif
+}
 # Which patterns do the kmers correspond to
 patterns_LMM=index[LMM_kmers]
 # Reduce down to the unique patterns to run LMM on
