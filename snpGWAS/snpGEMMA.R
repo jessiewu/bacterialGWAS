@@ -39,10 +39,15 @@ runGEMMA<-function(
 	gem=read.table(paste0("./output/",prefix,"_gemma_lmmout.assoc.txt"), header=TRUE, as.is=TRUE)
 	#SNPid=gem$rs
 	position=gem$ps
-	pval=as.numeric(gem$p_score)
+	#pval=as.numeric(gem$p_score)
 	#pvallik=gem$p_lrt
 	#gem=cbind(SNPid,position,pvallik)
-	negLog10PVal=-log10(pval)
+	pvalWald = as.numeric(gem$p_wald)
+	pvalLRT = as.numeric(gem$p_lrt)
+	pvalScore = as.numeric(gem$p_score)
+	negLog10PValWald=-log10(pvalWald)
+	negLog10PValLRT=-log10(pvalLRT)
+	negLog10PValScore=-log10(pvalScore)
 	#message("pval:")
 	#message(paste(pval[1],pval[2]))
 	#message(paste(log[1],log[2]))
@@ -52,18 +57,37 @@ runGEMMA<-function(
 
 	
 
-	manhattan.plot(
-		position = position, 
-		pvalue = negLog10PVal,
-		file = paste0(prefix,"_SNP_gemma_manhattan.png"),
-		plot.title = paste0(prefix," SNP GWAS gemma manhatten plot")
-	)
+	# manhattan.plot(
+		# position = position, 
+		# pvalue = negLog10PValWald,
+		# file = paste0(prefix,"_SNP_gemma_manhattan_wald.png"),
+		# plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (Wald test)")
+	# )
+	
+	# manhattan.plot(
+		# position = position, 
+		# pvalue = negLog10PValLRT,
+		# file = paste0(prefix,"_SNP_gemma_manhattan_lrt.png"),
+		# plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (LRT)")
+	# )
+	
+	# manhattan.plot(
+		# position = position, 
+		# pvalue = negLog10PValScore,
+		# file = paste0(prefix,"_SNP_gemma_manhattan_score.png"),
+		# plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (z-score)")
+	# )
+
 	cat(paste0("GEMMA completed: ",Sys.time()),file=paste0(prefix,"_input_logfile.txt"),append=TRUE,sep="\n")
 	
 	gemmaAnalysisInfo<-list(SNPid=gem$rs,
 		position=position,
-		pvallik=gem$p_lrt,
-		negLog10PValue=negLog10PVal
+		pvalWald = pvalWald,
+		pvalLRT = pvalLRT,
+		pvalScore = pvalScore,
+		negLog10PValWald = negLog10PValWald,
+		negLog10PValLRT = negLog10PValLRT,
+		negLog10PValScore = negLog10PValScore
 	)
 	
 	return(gemmaAnalysisInfo)
@@ -73,8 +97,12 @@ runGEMMA<-function(
 processGEMMA<-function(
 	SNPid = NULL,
 	position = NULL,
-	pvallik = NULL,
-	negLog10P = NULL,
+	pvalWald = NULL,
+	pvalLRT = NULL,
+	pvalScore = NULL,
+	negLog10PValWald = NULL,
+	negLog10PValLRT = NULL,
+	negLog10PValScore = NULL,
 	annotationPath = NULL,
 	prefix = NULL,
 	signif.threshold = NULL){
@@ -85,22 +113,41 @@ processGEMMA<-function(
 		
 	manhattan.plot(
 		position = position, 
-		pvalue = negLog10P,
-		file = paste0(prefix,"_SNP_gemma_manhattan.png"),
-		plot.title = paste0(prefix," SNP GWAS gemma manhatten plot")
+		pvalue = negLog10PValWald,
+		file = paste0(prefix,"_SNP_gemma_manhattan_wald.png"),
+		plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (Wald)")
 	)
+	
+	manhattan.plot(
+		position = position, 
+		pvalue = negLog10PValLRT,
+		file = paste0(prefix,"_SNP_gemma_manhattan_lrt.png"),
+		plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (LRT)")
+	)
+	
+	manhattan.plot(
+		position = position, 
+		pvalue = negLog10PValScore,
+		file = paste0(prefix,"_SNP_gemma_manhattan_score.png"),
+		plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (z-score)")
+	)
+	
 	
 	gemmaSummary.df<-data.frame(
 		SNPid = SNPid,
 		position = position,
-		pvallik = pvallik,
-		negLog10PValue = negLog10P,
+		pvalWald = pvalWald,
+		pvalLRT = pvalLRT,
+		pvalScore = pvalScore,
+		negLog10PValWald = negLog10PValWald,
+		negLog10PValLRT = negLog10PValLRT,
+		negLog10PValScore = negLog10PValScore,
 		annot
 	)
 	
-	threshold.set=subset(gemmaSummary.df, gemmaSummary.df$negLog10PValue >= signif.threshold)
+	threshold.set=subset(gemmaSummary.df, gemmaSummary.df$negLog10PValLRT >= signif.threshold)
 	colnames(threshold.set)[ncol(threshold.set)] = annot.header
-	negLog10POrder = order(threshold.set$negLog10PValue, decreasing=T)
+	negLog10POrder = order(threshold.set$negLog10PValLRT, decreasing=T)
 	write.table(threshold.set[negLog10POrder,], 
 		file=paste0(prefix,"_gemma_signifannot.txt"), quote=F, row=F, sep="\t")
 	write.table(gemmaSummary.df[,-ncol(gemmaSummary.df)], 
@@ -129,11 +176,17 @@ snpAnalysisGEMMA<-function(
 	)
 	
 	
+	
+	
 	processGEMMA(
 		SNPid = gemmaAnalysisInfo$SNPid,
 		position = gemmaAnalysisInfo$position,
-		pvallik = gemmaAnalysisInfo$pvallik,
-		negLog10P = gemmaAnalysisInfo$negLog10PValue,
+		pvalWald = gemmaAnalysisInfo$pvalWald,
+		pvalLRT = gemmaAnalysisInfo$pvalLRT,
+		pvalScore = gemmaAnalysisInfo$pvalScore,
+		negLog10PValWald = gemmaAnalysisInfo$negLog10PValWald,
+		negLog10PValLRT = gemmaAnalysisInfo$negLog10PValLRT,
+		negLog10PValScore = gemmaAnalysisInfo$negLog10PValScore,
 		annotationPath = annotationPath,
 		prefix = prefix,
 		signif.threshold = signif.threshold
