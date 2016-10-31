@@ -34,13 +34,17 @@ get.site.count<-function(filepath = NULL, missing = NULL){
 
 
 args = commandArgs(trailingOnly = TRUE)
-if(length(args)!=3) {
+if(length(args) != 2) {
 	stop("\nIncorrect usage\n")
 }
 
 dataFile = args[1]# "/Users/jessiewu/Documents/GWAS/ecoli/treeBuildTest/fastaPaths.txt"
-noCallSitesOutputPath = args[2] #"/Users/jessiewu/Documents/GWAS/ecoli/treeBuildTest/noCallSites.txt"
-missingSiteOuputPath = args[3]
+prefix = args[2]
+totalNoCallSiteCountPath = paste(prefix, "totalNoCallSiteCount.txt", sep=".")
+noCallSitesOutputPath = paste(prefix, "noCallSites.txt", sep=".")
+missingSiteOuputPath = paste(prefix, "missingSites", sep=".")
+#noCallSitesOutputPath = args[2] #"/Users/jessiewu/Documents/GWAS/ecoli/treeBuildTest/noCallSites.txt"
+#missingSiteOuputPath = args[3]
 
 #filepaths = "/Users/jessiewu/Documents/gwas/mtub/snpAnalysis/testMtubMissingValues.txt"
 #noCallSitesOutputPath = "/Users/jessiewu/Documents/gwas/mtub/snpAnalysis/testMtubMissingNoCalls.txt"
@@ -70,7 +74,8 @@ no.call.sites<-which(call.counts == 0)
 
 message(paste(c("Total number of no call sites: ",length(no.call.sites)),collapse=" "))
 
-write(length(no.call.sites), file = "totalNoCallSiteCount.txt")
+write(paste("Total number of no call sites:", length(no.call.sites), sep=" "),
+ file = totalNoCallSiteCountPath)
 
 write.table(
 	t(no.call.sites), 
