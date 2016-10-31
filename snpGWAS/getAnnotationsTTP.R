@@ -325,7 +325,7 @@ getAnnotations<-function(
 	genbank_file = NULL, 
 	prefix = NULL){
 		
-	snpinfo = read.delim(snpinfo_file, as.is=TRUE, sep="\t", quote="", comment="")
+	snpinfo = read.delim(snpinfo_file, header=T, as.is=TRUE, sep="\t", quote="", comment="")
 	ref = read.fasta.ref(reference_file)
 	ref_gbk_pipe<-pipe(paste0("sed 's/\\/note=\"\\*matching_locus_tag: /\\/matching_locus_tag=\"/g' ", genbank_file))
 	ref_gbk = read_dna_seg_from_file(ref_gbk_pipe, fileType="genbank", extra_fields="matching_locus_tag")
@@ -335,7 +335,7 @@ getAnnotations<-function(
 	splitseq[length(splitseq)+1]=(nrow(snpinfo)+1)
 
 	header=c(## From snpinfo.txt
-		"Position", "Allele0", "Allele1", "Allele2", "Allele3", "A", "C", "G", "T", "Pattern", 
+		names(snpinfo), 
 		## From mutation_type
 		"Type1", "Type2", "Type3", "Type4", 
 		"Refcodon", "Nonrefcodon1", "Nonrefcodon2", "Nonrefcodon3", "Nonrefcodon4",
