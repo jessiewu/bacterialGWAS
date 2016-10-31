@@ -114,22 +114,22 @@ processGEMMA<-function(
 	manhattan.plot(
 		position = position, 
 		pvalue = negLog10PValWald,
-		file = paste0(prefix,"_SNP_gemma_manhattan_wald.png"),
-		plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (Wald)")
+		file = paste0(prefix,"_bip_gemma_manhattan_wald.png"),
+		plot.title = paste0(prefix," (biallelic) SNP GWAS gemma manhatten plot (Wald)")
 	)
 	
 	manhattan.plot(
 		position = position, 
 		pvalue = negLog10PValLRT,
-		file = paste0(prefix,"_SNP_gemma_manhattan_lrt.png"),
-		plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (LRT)")
+		file = paste0(prefix,"_bip_gemma_manhattan_lrt.png"),
+		plot.title = paste0(prefix," (biallelic) SNP GWAS gemma manhatten plot (LRT)")
 	)
 	
 	manhattan.plot(
 		position = position, 
 		pvalue = negLog10PValScore,
-		file = paste0(prefix,"_SNP_gemma_manhattan_score.png"),
-		plot.title = paste0(prefix," SNP GWAS gemma manhatten plot (z-score)")
+		file = paste0(prefix,"_bip_gemma_manhattan_score.png"),
+		plot.title = paste0(prefix," (biallelic) SNP GWAS gemma manhatten plot (z-score)")
 	)
 	
 	
