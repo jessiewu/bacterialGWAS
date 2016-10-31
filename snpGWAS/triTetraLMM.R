@@ -1,6 +1,6 @@
 ### 1. Read the command line arguments
 args = commandArgs(trailingOnly = TRUE)
-if(length(args)<4 | args[1]=="-h" | args[1]=="-help") {
+if(length(args)<5 | args[1]=="-h" | args[1]=="-help") {
 	cat(help,sep="\n")
 	if(args[1]=="-h" | args[1]=="-help"){
 	    stop()
@@ -14,6 +14,7 @@ help=paste("triTetraLMM.R performs LMM using GEMMA on tri and tetra allelic site
 "kinshipAll: kinship matrix determined by biallelic SNPs",
 "phenotypeFiles: file consisting of 7 columns, with the number of rows being the number of phenotypes to test. Column 1: path to phenotype file. Column 2: output file prefix for that phenotype. Column 3: ML log likelihood of the null found in the GEMMA log file when run on the biallelic SNPs. Column 4: snpinfo file from running compact_SNPs. Column 5:snpinfo file on all SNPs. Column 6: cross reference file from running ClonalFrameML. Column 7: snp annotation file.",
 "prefix: prefix for gemma formatted files used to test all phenotypes",
+"gemmaPath: path to the Wilson modified GEMMA",
 "",
 "Optional (useful if wanting to run in parallel, default is to test all SNPs):","startLMM: which pattern to begin testing on","endLMM: last pattern to test",
 sep="\n")
@@ -23,9 +24,10 @@ kinshipAll=args[2]
 phenotypeFiles=args[3]
 #L0=as.numeric(args[4])
 prefix=args[4]
-if(length(args)>4){
-	startLMM=as.numeric(args[5])
-	endLMM=as.numeric(args[6])
+gemmaPath=args[5]
+if(length(args)>5){
+	startLMM=as.numeric(args[6])
+	endLMM=as.numeric(args[7])
 }
 
 
@@ -133,7 +135,7 @@ return(cbind(data,dataCOV))
 
 triTetraPatterns =apply(triTetraPatterns,1,convertTriTetra)
 
-if(length(args) < 5){
+if(length(args) < 6){
  	startLMM=1
  	endLMM=length(triTetraPatterns)
    
@@ -179,7 +181,7 @@ for(i in startLMM:endLMM){
 		phenotypeFilePath = paste(c(prefix, "_",pheno_prefix[j],"_phenotype.txt"), collapse="")
 		write(data.df$phenotype, file=phenotypeFilePath,  ncolumns=1)
 		message("phenotypeFilePath: ", phenotypeFilePath)
-		system(paste0("/home/wilson/C++/gemma/bin/gemma -g ",gen_output_filename," -p ", phenotypeFilePath," -a ",snp_output_filename," -c ",cov_output_filename," -k ",kinshipAll," -lmm 4 -o ",prefix,"_",pheno_prefix[j],"_gemma_lmmout_triTetra_SNP",i," -maf 0"))
+		system(paste0(gemmaPath," -g ",gen_output_filename," -p ", phenotypeFilePath," -a ",snp_output_filename," -c ",cov_output_filename," -k ",kinshipAll," -lmm 4 -o ",prefix,"_",pheno_prefix[j],"_gemma_lmmout_triTetra_SNP",i," -maf 0"))
 	}
 
 }
