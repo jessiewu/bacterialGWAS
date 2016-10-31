@@ -89,8 +89,8 @@ allele.id = matrix(c("A","C","G","T")[apply(m[1:4,is.poly],2,order,decreasing=TR
 
 bip_outfile = paste0(outputPrefix,".imputed.bip.patterns.txt");		# biallelic polymorphisms encoded -1 (missing) 0 (allele 0) 1 (allele 1)
 bipinfo_outfile = paste0(outputPrefix,".imputed.bipinfo.txt");		# positional and allelic information for biallelic polymorphisms
-snp_outfile = paste0(outputPrefix,".imputed.snp.patterns.txt");	# non-biallelic polymorphisms encoded similarly
-snpinfo_outfile = paste0(outputPrefix,".imputed.snpinfo.txt");		# non-biallelic polymorphism positional information
+snp_outfile = paste0(outputPrefix,".imputed.ttp.patterns.txt");	# non-biallelic polymorphisms encoded similarly
+snpinfo_outfile = paste0(outputPrefix,".imputed.ttpinfo.txt");		# non-biallelic polymorphism positional information
 
 # Allocate memory for bip and snp, because need to transform so cannot output on the fly
 bip = matrix(NA,sum(isbiallelic),length(comid))

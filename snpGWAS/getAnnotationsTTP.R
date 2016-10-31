@@ -346,8 +346,8 @@ getAnnotations<-function(
 		"gene", "synonym", "product", "proteinid", "feature", "gene_type", 
 		"matching_locus_tag", "col", "lty", "lwd", "pch", "cex")
 	
-	logFilePath = paste0(prefix,"_snp.annotation_logfile.txt")
-	annotFileName = paste0(prefix,".snp.annotation.txt")
+	logFilePath = paste0(prefix,"_ttp.annotation_logfile.txt")
+	annotFileName = paste0(prefix,".ttp.annotation.txt")
 	cat(paste(c(header),collapse="\t"), file=annotFileName, append=FALSE, sep="\n")
 		
 	for(j in 1:(length(splitseq)-1)){

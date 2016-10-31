@@ -39,7 +39,7 @@ triTetrallelicSites = snpInfo.df$Position
 invariantSites = setdiff(1:length(reference), c(biallelicSites, triTetrallelicSites))
 
 # Construct a FASTA and PHYLIP file on the fly
-phylip_outfile = paste0(prefix, "_phylip.phylip", sep="")
+phylip_outfile = paste0(prefix, ".phylip", sep="")
 
 # Read the mapcall file
 fa = toupper(read_reference_gz(filepaths[1]))

@@ -150,7 +150,7 @@ public class SnpCalling {
             }
 
             writeInfo(prefix+".bipinfo.txt",
-                    prefix+".snpinfo.txt",
+                    prefix+".ttpinfo.txt",
                     biallelicIndex,
                     biallelicState,
                     tritetrallelicIndex,
@@ -161,7 +161,7 @@ public class SnpCalling {
             String[] ids = getIds(dataFile);
 
             writePatterns(prefix+".bip.patterns.txt",
-                    prefix+".snp.patterns.txt",
+                    prefix+".ttp.patterns.txt",
                     bip,
                     snp,
                     ids
