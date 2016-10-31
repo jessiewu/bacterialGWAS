@@ -253,7 +253,7 @@ getAnnotations<-function(
 	genbank_file = NULL, 
 	prefix = NULL){
 		
-	bipinfo = read.delim(bipinfo_file,as.is=TRUE,sep="\t",quote="",comment="")
+	bipinfo = read.delim(bipinfo_file, header = TRUE, as.is=TRUE,sep="\t",quote="",comment="")
 	ref = read.fasta.ref(reference_file)
 	#genbank_file = "/Volumes/UDISK/svn/gwas_methods/release/gwasSourceCodes/example/R00000022.gbk"
 	#genbank_file = "/Volumes/UDISK/svn/gwas_methods/release/gwasSourceCodes/example/sim/simRef.gbk"
@@ -264,7 +264,7 @@ getAnnotations<-function(
 	splitseq=seq(1,by=1000,to=nrow(bipinfo))
 	splitseq[length(splitseq)+1]=(nrow(bipinfo)+1)
 
-	header=c("Position", "Allele0", "Allele1", "A", "C", "G", "T", "Pattern", "Type", "Refcodon", "Nonrefcodon", "Frame", "Codonposition", "Refaa", "Nonrefaa", "name", "start", "end", "strand", "length", "pid", "gene", "synonym", "product", "proteinid", "feature", "gene_type", "matching_locus_tag", "col", "lty", "lwd", "pch", "cex")
+	header=c(names(bipinfo), "Type", "Refcodon", "Nonrefcodon", "Frame", "Codonposition", "Refaa", "Nonrefaa", "name", "start", "end", "strand", "length", "pid", "gene", "synonym", "product", "proteinid", "feature", "gene_type", "matching_locus_tag", "col", "lty", "lwd", "pch", "cex")
 	cat(paste(c(header),collapse="\t"),file=paste0(prefix,".bip.annotation.txt"),append=FALSE,sep="\n")
 	logFilePath = paste0(prefix,"_bipannotation_logfile.txt")
 	annotFileName = paste0(prefix,".bip.annotation.txt")
