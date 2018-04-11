@@ -71,16 +71,9 @@ split_kmers=function(wh){
 #######################################################################################
 ## Construct a file containing the kmers for the BLAST search
 #######################################################################################
-construct_kmer_file=function(data_loop,kmers_signif){
+construct_kmer_file=function(data_loop, kmers_signif, loop_start){
 	info=paste0(">kmer",data_loop)
-	index=unlist(strsplit(as.character(data_loop),""))
-	if(length(index)<4){
-		index=as.numeric(paste(index,collapse=""))
-	} else {
-		index=as.numeric(paste(index[2:length(index)],collapse=""))
-	}
-	if(index==0)index=1000
-	cat(info,file=paste0(prefix,"temp_kmer.txt"),sep="\n",append=(index>1))
+	cat(info,file=paste0(prefix,"temp_kmer.txt"),sep="\n",append=(data_loop>loop_start))
 	cat(kmers_signif[data_loop],file=paste0(prefix,"temp_kmer.txt"),append=TRUE,sep="\n")
 }
 
@@ -317,7 +310,7 @@ annotate_kmers=function(splitseq,prefix,nproc,blastdb1,blastdb2,wh_pos,kmers_sig
 	
 	### Annotate using the genus BLAST database and specified gene database
 	# Construct file containing 1000 kmers
-	sapply(data_loop,construct_kmer_file,kmers_signif=kmers_signif)
+	sapply(data_loop,construct_kmer_file,kmers_signif=kmers_signif, loop_start = data_loop[1])
 	## Run BLAST from the command line against refseq database and store wanted values
 	run_BLAST(prefix,nproc,blastdb1, blastnPath = blastnPath)
 	# Open BLAST results
