@@ -582,7 +582,7 @@ runGetAnnotationsTriTetra = function(
 	inputLogFilePath = NULL){
 		
 	system(paste(c("Rscript", getAnnotationsTritetraR, snpinfo, ref_fa, ref_gbk, prefix), collapse=" "))
-	snpAnnotPath = paste(c(formatDir(getwd()),prefix,".snp.annotation.txt"),collapse="")
+	snpAnnotPath = paste(c(formatDir(getwd()),prefix,".ttp.annotation.txt"),collapse="")
 	message(snpAnnotPath)
 	checkExistence(snpAnnotPath, "The snp annotation file has not been created correctly by the get_annotations_tritetra_chw.R")
 	cat(paste0("Tri and tetra allelic SNP annotation completed: ",Sys.time()),
